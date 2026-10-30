@@ -1,0 +1,112 @@
+package gui;
+
+import javax.swing.*;
+import java.awt.*;
+import app.Medico;
+import dao.MedicoDAO;
+
+public class MedicoForm extends JFrame {
+    private final JTextField txtCodigo = new JTextField();
+    private final JTextField txtNome = new JTextField();
+    private final JTextField txtEmail = new JTextField();
+    private final JTextField txtTelefone = new JTextField();
+    private final JTextField txtCrm = new JTextField();
+    private final JTextField txtEspecialidade = new JTextField();
+
+    public MedicoForm() {
+        setTitle("Cadastro de Médicos");
+        setSize(1000, 600);
+        setMinimumSize(new Dimension(800, 450));
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        montarTela();
+    }
+
+    private void montarTela() {
+        JPanel principal = new JPanel(new BorderLayout(10, 10));
+        principal.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        JLabel titulo = new JLabel("Cadastro de Médicos");
+        titulo.setFont(new Font("Arial", Font.BOLD, 24));
+        principal.add(titulo, BorderLayout.NORTH);
+
+        JPanel centro = new JPanel(new BorderLayout(10, 10));
+        centro.add(criarFormulario(), BorderLayout.NORTH);
+        
+        principal.add(centro, BorderLayout.CENTER);
+        setContentPane(principal);
+    }
+
+    private JPanel criarFormulario() {
+        JPanel painel = new JPanel(new GridBagLayout());
+        painel.setBorder(BorderFactory.createTitledBorder("Dados do Médico"));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        adicionarCampo(painel, gbc, 0, 0, "Código:", txtCodigo);
+        adicionarCampo(painel, gbc, 1, 0, "Nome:", txtNome);
+        adicionarCampo(painel, gbc, 0, 1, "E-mail:", txtEmail);
+        adicionarCampo(painel, gbc, 1, 1, "Telefone:", txtTelefone);
+        adicionarCampo(painel, gbc, 0, 2, "CRM:", txtCrm);
+        adicionarCampo(painel, gbc, 1, 2, "Especialidade:", txtEspecialidade);
+
+        JPanel botoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton btnNovo = new JButton("Novo");
+        JButton btnSalvar = new JButton("Salvar");
+        JButton btnExcluir = new JButton("Excluir");
+        JButton btnLimpar = new JButton("Limpar");
+
+        botoes.add(btnNovo);
+        botoes.add(btnSalvar);
+        botoes.add(btnExcluir);
+        botoes.add(btnLimpar);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 4;
+        painel.add(botoes, gbc);
+
+        btnNovo.addActionListener(e -> limparFormulario());
+        btnSalvar.addActionListener(e -> salvar());
+        btnLimpar.addActionListener(e -> limparFormulario());
+        return painel;
+    }
+
+    private void salvar() {
+        MedicoDAO.criarTabela();
+
+        Medico obj = new Medico();
+        obj.setNome(txtNome.getText());
+        obj.setEmail(txtEmail.getText());
+        obj.setTelefone(txtTelefone.getText());
+        obj.setCrm(txtCrm.getText());
+        obj.setEspecialidade(txtEspecialidade.getText());
+
+        MedicoDAO.inserir(obj);
+        JOptionPane.showMessageDialog(this, "Médico registrado com sucesso no banco de dados!");
+        limparFormulario();
+    }
+
+    private void limparFormulario() {
+        txtCodigo.setText("");
+        txtNome.setText("");
+        txtEmail.setText("");
+        txtTelefone.setText("");
+        txtCrm.setText("");
+        txtEspecialidade.setText("");
+    }
+
+    private void adicionarCampo(JPanel painel, GridBagConstraints gbc, int coluna, int linha, String rotulo, JTextField campo) {
+        gbc.gridx = coluna * 2;
+        gbc.gridy = linha;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        painel.add(new JLabel(rotulo), gbc);
+
+        gbc.gridx = coluna * 2 + 1;
+        gbc.weightx = 1;
+        painel.add(campo, gbc);
+    }
+}
